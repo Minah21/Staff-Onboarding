@@ -56,7 +56,7 @@ window.LESSONS = [
   <li>Sign the acknowledgement pages of the SOP and the Employee Code of Conduct and hand them to Admin.</li>
 </ol>`,
   quiz: [
-    { q: "Who is the Managing Director of A.W. Law LLC?", o: ["Muhammad Hasif", "Abdul Wahab", "Roy Paul Mukkam", "Predeesha"], a: 1 },
+    { q: "Who is the Managing Director of A.W. Law LLC?", o: ["Muhammad Hasif", "Abdul Wahab", "Roy Paul Mukkam", "Shantini"], a: 1 },
     { q: "Where is the firm's office?", o: ["Raffles Place", "Chinatown Point, 133 New Bridge Road", "Paya Lebar Square", "The State Courts building"], a: 1 },
     { q: "Which three main practice areas does the firm cover?", o: ["Corporate, tax and IP", "Family, civil and criminal", "Shipping, insurance and banking", "Immigration, property and tax"], a: 1 },
     { q: "What is the standard initial consultation fee?", o: ["$100.00", "$200.00 with no GST", "$218.00 ($200 + GST)", "It is always free"], a: 2 },
@@ -306,7 +306,7 @@ A.W. LAW LLC</pre>
 
 <div class="prec" data-title="Notice of Additional Fees">
 <h4>F. Notice to Client of Additional Fees <small>At least one week before billing</small></h4>
-<p class="use">Use when: work goes beyond the scope of the Warrant to Act. Pk calendars the date one week after this notice to ask for the fee.</p>
+<p class="use">Use when: work goes beyond the scope of the Warrant to Act. The Billing Department calendars the date one week after this notice to ask for the fee.</p>
 <pre>Subject: [Client Name]: Additional work beyond the Warrant to Act
 
 Dear [Mr / Ms Name],
@@ -523,22 +523,17 @@ A.W. LAW LLC</pre>
 <p class="lead">Billing protects the firm and the client. Every bill must match what the client agreed to in the Warrant to Act, and the client is never surprised by a fee.</p>
 
 <div class="flow">
-  <div class="step"><b>New case</b><p>New client pays a <b>deposit</b>. The <b>PIC who opens the file collects the deposit</b>, and tells <b>Pk</b> the instalment date(s) so Pk can calendar and track them.</p></div>
+  <div class="step"><b>New case</b><p>New client pays a <b>deposit</b>. The <b>PIC who opens the file collects the deposit</b>, and tells the <b>Billing Department</b> the instalment date(s) so they can calendar and track them.</p></div>
   <div class="arrow">→</div>
-  <div class="step"><b>Ongoing case</b><p>Existing clients pay <b>instalments</b>. The PIC tells <b>Pk</b> the amount to bill and the work done to date.</p></div>
+  <div class="step"><b>Ongoing case</b><p>Existing clients pay <b>instalments</b>. The PIC tells the <b>Billing Department</b> the amount to bill and the work done to date.</p></div>
   <div class="arrow">→</div>
-  <div class="step"><b>WTA check</b><p><b>Pk checks the WTA</b> and makes sure the amount billed complies with it.</p></div>
+  <div class="step"><b>WTA check</b><p>The <b>Billing Department checks the WTA</b> and makes sure the amount billed complies with it.</p></div>
   <div class="arrow">→</div>
-  <div class="step"><b>Out of scope?</b><p>If the work is additional or beyond the WTA, the PIC puts the client <b>on notice by email at least one week</b> before billing. Pk calendars the date a week after the notice to ask for the fee.</p></div>
+  <div class="step"><b>Out of scope?</b><p>If the work is additional or beyond the WTA, the PIC puts the client <b>on notice by email at least one week</b> before billing. The Billing Department calendars the date a week after the notice to ask for the fee.</p></div>
 </div>
 
 <h3>Who bills what</h3>
-<table class="fees">
-  <tr><th>Matter type</th><th>Pk liaises with</th></tr>
-  <tr><td>Conveyancing (Cvy)</td><td>Aslinda</td></tr>
-  <tr><td>Accident</td><td>Shanny</td></tr>
-  <tr><td>Injury</td><td>Shanny</td></tr>
-</table>
+<p>All billing, including conveyancing (Cvy), accident and injury matters, is handled by the <b>Billing Department</b>.</p>
 
 <h3>Following up new enquiries</h3>
 <ol>
@@ -549,13 +544,13 @@ A.W. LAW LLC</pre>
 
 <div class="callout">Use precedent <b>F, Notice to Client of Additional Fees</b> (Lesson 03) when work goes beyond the WTA.</div>`,
   quiz: [
-    { q: "For a new case, who collects the client's deposit?", o: ["Pk", "Minah", "The PIC who opens the file", "The lawyer"], a: 2 },
-    { q: "Who must the PIC tell about the client's instalment dates?", o: ["The client's family", "Pk", "The opposing party", "Nobody"], a: 1 },
-    { q: "For ongoing cases, what does the PIC tell Pk?", o: ["Only the client's phone number", "The amount to bill and the work done to date", "The court's decision", "Nothing; Pk works it out"], a: 1 },
-    { q: "What does Pk check every bill against?", o: ["The Warrant to Act (WTA)", "The receipt book", "The court calendar", "Last year's bills"], a: 0 },
+    { q: "For a new case, who collects the client's deposit?", o: ["The Billing Department", "The receptionist", "The PIC who opens the file", "The lawyer"], a: 2 },
+    { q: "Who must the PIC tell about the client's instalment dates?", o: ["The client's family", "The Billing Department", "The opposing party", "Nobody"], a: 1 },
+    { q: "For ongoing cases, what does the PIC tell the Billing Department?", o: ["Only the client's phone number", "The amount to bill and the work done to date", "The court's decision", "Nothing; they work it out"], a: 1 },
+    { q: "What does the Billing Department check every bill against?", o: ["The Warrant to Act (WTA)", "The receipt book", "The court calendar", "Last year's bills"], a: 0 },
     { q: "Work goes beyond the WTA. How much notice must the client get before billing?", o: ["None", "At least one week, by email", "One day, by phone", "One month, by letter"], a: 1 },
-    { q: "Who does Pk liaise with for conveyancing billing?", o: ["Shanny", "Aslinda", "Minah", "AW"], a: 1 },
-    { q: "Who does Pk liaise with for accident and injury billing?", o: ["Aslinda", "Minah", "Shanny", "Hasif"], a: 2 },
+    { q: "Who handles billing for conveyancing matters?", o: ["The receptionist", "The Billing Department", "The client", "The opposing party"], a: 1 },
+    { q: "Who handles billing for accident and injury matters?", o: ["The PIC alone", "The receptionist", "The Billing Department", "The court"], a: 2 },
     { q: "A lawyer saw a new client on Monday. When do you check whether they engaged us, and when do you follow up with the client?", o: ["Check Tuesday; follow up the next day between 9am and 1pm", "Check next month; no follow-up", "Follow up Monday night", "Wait for the client to call"], a: 0 }
   ]
 }
