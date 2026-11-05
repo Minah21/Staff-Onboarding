@@ -34,10 +34,9 @@ window.LESSONS = [
 <h3>Our people</h3>
 <ul>
   <li><b>Abdul Wahab</b> — Managing Director. He leads the firm; "AW" in our procedures refers to him.</li>
-  <li><b>Muhammad Hasif</b> and <b>Roy Paul Mukkam</b> — Associate Directors.</li>
-  <li><b>Minah</b> — Admin. Cash receipts, the receipt book and the weekly cash spreadsheet go to her.</li>
-  <li><b>Predeesha ("Pk")</b> — Billing. Tracks deposits and instalments and checks every bill against the Warrant to Act.</li>
-  <li><b>Aslinda</b> (conveyancing) and <b>Shanny</b> (accident and injury) — Pk liaises with them on billing for those matters.</li>
+  <li><b>Muhammad Hasif</b> — Associate Director.</li>
+  <li><b>Roy Paul Mukkam</b> — Associate Director.</li>
+  <li><b>Shantini</b> — Associate, and HR / Billing Department.</li>
 </ul>
 
 <h3>How we work with clients</h3>
@@ -61,7 +60,7 @@ window.LESSONS = [
     { q: "Which three main practice areas does the firm cover?", o: ["Corporate, tax and IP", "Family, civil and criminal", "Shipping, insurance and banking", "Immigration, property and tax"], a: 1 },
     { q: "What is the standard initial consultation fee?", o: ["$100.00", "$200.00 with no GST", "$218.00 ($200 + GST)", "It is always free"], a: 2 },
     { q: "Who must be present during every client consultation?", o: ["The receptionist only", "A paralegal", "A lawyer", "Admin"], a: 2 },
-    { q: "Who handles billing and tracks client instalments?", o: ["Minah", "Predeesha (Pk)", "Shanny", "The client's PIC alone"], a: 1 },
+    { q: "Who is an Associate and also heads the HR / Billing Department?", o: ["Roy Paul Mukkam", "Shantini", "Muhammad Hasif", "Abdul Wahab"], a: 1 },
     { q: "Where do you apply for leave?", o: ["By WhatsApp to any lawyer", "On paper with Admin", "In the Leave Approver app", "By email to the client"], a: 2 },
     { q: "In what form must client updates be given?", o: ["Verbally is enough", "In writing: email, letter or WhatsApp", "Only by phone call", "Only in person"], a: 1 },
     { q: "Which professional body are the firm's solicitors members of?", o: ["Law Society of Singapore", "Singapore Academy of Accountancy", "Institute of Banking", "Ministry of Manpower"], a: 0 },
