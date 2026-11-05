@@ -36,7 +36,7 @@ window.LESSONS = [
   <li><b>Abdul Wahab</b> — Managing Director. He leads the firm; "AW" in our procedures refers to him.</li>
   <li><b>Muhammad Hasif</b> — Associate Director.</li>
   <li><b>Roy Paul Mukkam</b> — Associate Director.</li>
-  <li><b>Shantini</b> — Associate, and HR / Billing Department.</li>
+  <li><b>Shantini</b> — Associate.<br>HR / Billing Department.</li>
 </ul>
 
 <h3>How we work with clients</h3>
