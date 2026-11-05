@@ -168,16 +168,23 @@
 
     // wrap wide tables for small screens
     app.querySelectorAll("table.fees").forEach((t) => { const w = document.createElement("div"); w.className = "table-wrap"; t.parentNode.insertBefore(w, t); w.appendChild(t); });
-    // copy buttons on precedents
+    // precedents: render in Arial 11 letter layout, with download + copy buttons
     app.querySelectorAll(".prec").forEach((p) => {
+      const pre = p.querySelector("pre");
+      const raw = pre.textContent;
+      pre.replaceWith(renderTemplate(raw));
+      const bar = document.createElement("div");
+      bar.className = "prec-actions";
+      const file = "assets/precedents/" + encodeURIComponent("Precedent - " + p.dataset.title + ".docx");
+      bar.innerHTML = `<a class="btn btn-sm" href="${file}" download>Download (Word)</a>`;
       const b = document.createElement("button");
-      b.className = "btn btn-ghost btn-sm copy"; b.type = "button"; b.textContent = "Copy template";
+      b.className = "btn btn-ghost btn-sm"; b.type = "button"; b.textContent = "Copy text";
       b.onclick = async () => {
-        const text = p.querySelector("pre").innerText;
-        try { await navigator.clipboard.writeText(text); toast(p.dataset.title + " copied"); }
+        try { await navigator.clipboard.writeText(raw); toast(p.dataset.title + " copied"); }
         catch (e) { toast("Select the text and copy it manually"); }
       };
-      p.appendChild(b);
+      bar.appendChild(b);
+      p.insertBefore(bar, p.querySelector(".use").nextSibling);
     });
     const ack = document.getElementById("ack");
     const btn = document.getElementById("toTest");
@@ -185,6 +192,31 @@
     if (ack) ack.onchange = () => { state.ack[id] = ack.checked; save(state); sync(); };
     sync();
     btn.onclick = () => (location.hash = "#/test/" + id);
+  }
+
+  // Same layout rules as scripts/build_precedents.py
+  function renderTemplate(text) {
+    const box = document.createElement("div");
+    box.className = "tpl";
+    let cur = null;
+    const hl = (s) => esc(s).replace(/\[([^\]]*)\]/g, "<mark>[$1]</mark>");
+    const isHead = (t) => { const x = t.replace(/\[[^\]]*\]/g, ""); return /[A-Za-z]/.test(x) && x.toUpperCase() === x && t.length > 6; };
+    text.split("\n").forEach((line) => {
+      let m;
+      if (!line.trim()) { cur = null; if (box.lastChild && box.lastChild.className !== "gap") { const g = document.createElement("div"); g.className = "gap"; box.appendChild(g); } return; }
+      if ((m = line.match(/^(\d+\.)\s+(.*)$/)) || (m = line.match(/^\s+(\([a-z]\))\s+(.*)$/))) {
+        cur = document.createElement("p");
+        cur.className = /^\d/.test(m[1]) ? "np" : "sp";
+        cur.innerHTML = `<span class="lbl">${m[1]}</span><span class="txt">${hl(m[2])}</span>`;
+        box.appendChild(cur); return;
+      }
+      if (/^\s/.test(line) && cur) { cur.querySelector(".txt").innerHTML += " " + hl(line.trim()); return; }
+      cur = null;
+      const p = document.createElement("p");
+      p.innerHTML = isHead(line.trim()) ? `<b>${hl(line.trim())}</b>` : hl(line.trim());
+      box.appendChild(p);
+    });
+    return box;
   }
 
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }

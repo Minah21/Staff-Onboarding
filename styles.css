@@ -163,3 +163,14 @@ table.fees{width:100%;border-collapse:collapse;font-size:14.5px;margin:6px 0 10p
 }
 a.lcard{text-decoration:none}
 .result,.q{scroll-margin-top:90px}
+/* precedent templates: Arial 11 letter layout */
+.tpl{font-family:Arial, Helvetica, sans-serif;font-size:11pt;line-height:1.4;color:#111;background:#fff;border:1px solid #d9cfc4;border-radius:8px;padding:28px 32px;box-shadow:0 1px 0 #eee}
+.tpl p{margin:0}
+.tpl .gap{height:11pt}
+.tpl .np,.tpl .sp{display:flex;text-align:justify}
+.tpl .np .lbl{flex:0 0 36px}
+.tpl .sp{padding-left:36px}
+.tpl .sp .lbl{flex:0 0 36px}
+.tpl mark{background:#fbe8b7;padding:0;border-radius:2px}
+.prec-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+@media (max-width:560px){.tpl{padding:18px 16px}}
