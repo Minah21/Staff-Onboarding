@@ -196,11 +196,35 @@
 
   // Same layout rules as scripts/build_precedents.py
   function renderTemplate(text) {
+    const page = document.createElement("div");
+    page.className = "tpl-page";
+    page.innerHTML = `
+      <div class="lh">
+        <img src="assets/logo.png" alt="A.W. Law LLC — Advocates &amp; Solicitors">
+        <div class="lh-info">
+          <table>
+            <tr><td>Writer</td><td>:</td><td>____________</td></tr>
+            <tr><td>Email</td><td>:</td><td>_______@awlaw.com.sg</td></tr>
+            <tr><td>Paralegal</td><td>:</td><td>__________</td></tr>
+            <tr><td>Email</td><td>:</td><td>______@awlaw.com.sg</td></tr>
+            <tr><td>Tel</td><td>:</td><td>6733 0021</td></tr>
+            <tr><td>Fax</td><td>:</td><td>6733 2377 <i class="lh-fax">(We do not accept service of Court Documents by Fax)</i></td></tr>
+          </table>
+          <div>133 New Bridge Road #20-03 Chinatown Point Singapore 059413</div>
+          <div>GST Registration No. 201919619Z</div>
+        </div>
+      </div>`;
     const box = document.createElement("div");
     box.className = "tpl";
+    page.appendChild(box);
+    const foot = document.createElement("div");
+    foot.className = "lh-foot";
+    foot.innerHTML = `<div class="lh-pg">P a g e &nbsp;| <b>1</b> of <b>1</b></div>
+      <p>A.W. LAW LLC (UEN Number: 201919619Z) is a law corporation with limited liability. The contents of this letter are strictly confidential and may contain privileged information. This letter is intended for the sole use of the addressee. If you have received this in error, please contact us IMMEDIATELY.</p>`;
+    page.appendChild(foot);
     let cur = null;
     const hl = (s) => esc(s).replace(/\[([^\]]*)\]/g, "<mark>[$1]</mark>");
-    const isHead = (t) => { const x = t.replace(/\[[^\]]*\]/g, ""); return /[A-Za-z]/.test(x) && x.toUpperCase() === x && t.length > 6; };
+    const isHead = (t) => { const t2 = t.replace("eLITIGATION", "ELITIGATION"); let x = t2.replace(/\[[^\]]*\]/g, ""); if (!/[A-Za-z]/.test(x)) x = t2; return /[A-Za-z]/.test(x) && x.toUpperCase() === x && t.length > 6; };
     text.split("\n").forEach((line) => {
       let m;
       if (!line.trim()) { cur = null; if (box.lastChild && box.lastChild.className !== "gap") { const g = document.createElement("div"); g.className = "gap"; box.appendChild(g); } return; }
@@ -216,7 +240,7 @@
       p.innerHTML = isHead(line.trim()) ? `<b>${hl(line.trim())}</b>` : hl(line.trim());
       box.appendChild(p);
     });
-    return box;
+    return page;
   }
 
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
