@@ -36,7 +36,8 @@ window.LESSONS = [
   <li><b>Abdul Wahab</b> — Managing Director. He leads the firm; "AW" in our procedures refers to him.</li>
   <li><b>Muhammad Hasif</b> — Associate Director.</li>
   <li><b>Roy Paul Mukkam</b> — Associate Director.</li>
-  <li><b>Shantini</b> — Associate.<br>HR / Billing Department.</li>
+  <li><b>Shantini</b> — Associate.</li>
+  <li><b>HR / Billing Department</b></li>
 </ul>
 
 <h3>How we work with clients</h3>
@@ -60,7 +61,7 @@ window.LESSONS = [
     { q: "Which three main practice areas does the firm cover?", o: ["Corporate, tax and IP", "Family, civil and criminal", "Shipping, insurance and banking", "Immigration, property and tax"], a: 1 },
     { q: "What is the standard initial consultation fee?", o: ["$100.00", "$200.00 with no GST", "$218.00 ($200 + GST)", "It is always free"], a: 2 },
     { q: "Who must be present during every client consultation?", o: ["The receptionist only", "A paralegal", "A lawyer", "Admin"], a: 2 },
-    { q: "Who is an Associate and also heads the HR / Billing Department?", o: ["Roy Paul Mukkam", "Shantini", "Muhammad Hasif", "Abdul Wahab"], a: 1 },
+    { q: "Who are the firm's Associate Directors?", o: ["Abdul Wahab and Shantini", "Muhammad Hasif and Roy Paul Mukkam", "Shantini and Roy Paul Mukkam", "Abdul Wahab and Muhammad Hasif"], a: 1 },
     { q: "Where do you apply for leave?", o: ["By WhatsApp to any lawyer", "On paper with Admin", "In the Leave Approver app", "By email to the client"], a: 2 },
     { q: "In what form must client updates be given?", o: ["Verbally is enough", "In writing: email, letter or WhatsApp", "Only by phone call", "Only in person"], a: 1 },
     { q: "Which professional body are the firm's solicitors members of?", o: ["Law Society of Singapore", "Singapore Academy of Accountancy", "Institute of Banking", "Ministry of Manpower"], a: 0 },
