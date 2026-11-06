@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Onboarding Records Admin</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=5">
+<style>
+  .adm-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .adm-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .adm-tools input{padding:9px 14px;border:1px solid var(--line);border-radius:999px;font:14px var(--sans);background:var(--card);min-width:220px}
+  .staff{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14.5px}
+  .staff th,.staff td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .staff th{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--maroon);background:var(--paper)}
+  .staff tr:last-child td{border-bottom:0}
+  .staff .em{color:var(--muted);font-size:13px}
+  .dots{display:flex;gap:4px}
+  .dots i{width:12px;height:12px;border-radius:50%;background:var(--line);display:inline-block}
+  .dots i.on{background:var(--ok)}
+  .empty{padding:40px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:12px}
+  @media (max-width:720px){.staff .hide-sm{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a href="./" class="brand" aria-label="Onboarding home"><img src="assets/logo.png" alt="A.W. Law LLC — Advocates &amp; Solicitors"></a>
+  <nav class="topnav"><span class="who" id="adminWho"></span><button class="btn btn-ghost btn-sm" id="signout" hidden>Sign out</button></nav>
+</header>
+<main id="app"></main>
+<footer class="foot"><span>A.W. Law LLC · Onboarding records · Admin only</span></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="config.js?v=5"></script>
+<script src="lessons.js?v=5"></script>
+<script>
+(function () {
+  "use strict";
+  const app = document.getElementById("app");
+  const L = window.LESSONS;
+  const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (d) => new Date(d).toLocaleString("en-SG", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit" });
+  const dmy = (d) => { const x = new Date(d); return [x.getDate(), x.getMonth() + 1, x.getFullYear()].map((n) => String(n).padStart(2, "0")).join(" "); };
+  let staff = [];
+
+  function signInView(msg) {
+    document.getElementById("signout").hidden = true;
+    document.getElementById("adminWho").textContent = "";
+    app.innerHTML = `
+    <form class="signin" id="f">
+      <img src="assets/logo.png" alt="A.W. Law LLC">
+      <div class="eyebrow" style="text-align:center">Admin only</div>
+      <h2 style="text-align:center">Onboarding records</h2>
+      <p class="small" style="text-align:center">Sign in with your Leave Approver admin account.</p>
+      <label for="em">Email</label><input id="em" type="email" autocomplete="username" required>
+      <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>
+      <div class="err" id="err">${esc(msg || "")}</div>
+      <button class="btn" style="width:100%;margin-top:10px">Sign in</button>
+    </form>`;
+    document.getElementById("f").onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById("err"); err.textContent = "Signing in…";
+      const { error } = await sb.auth.signInWithPassword({ email: document.getElementById("em").value.trim(), password: document.getElementById("pw").value });
+      if (error) { err.textContent = error.message; return; }
+      start();
+    };
+  }
+
+  async function start() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return signInView();
+    const { data: me } = await sb.from("profiles").select("full_name, role").eq("id", session.user.id).maybeSingle();
+    if (!me || me.role !== "admin") { await sb.auth.signOut(); return signInView("This page is for admins only."); }
+    document.getElementById("adminWho").textContent = me.full_name || session.user.email;
+    const so = document.getElementById("signout"); so.hidden = false;
+    so.onclick = async () => { await sb.auth.signOut(); signInView(); };
+    app.innerHTML = `<p class="small">Loading records…</p>`;
+    await load();
+  }
+
+  async function load() {
+    const [r, s] = await Promise.all([
+      sb.from("onboarding_results").select("staff_name, staff_email, lesson, score, total, percent, passed, created_at").order("created_at"),
+      sb.from("onboarding_signatures").select("id, staff_name, staff_email, lesson, signed_at").order("signed_at")
+    ]);
+    if (r.error || s.error) { app.innerHTML = `<div class="empty">Couldn't load records: ${esc((r.error || s.error).message)}</div>`; return; }
+    const map = new Map();
+    const get = (name, email) => {
+      const k = email.toLowerCase();
+      if (!map.has(k)) map.set(k, { name, email: k, results: [], sigs: [], last: 0 });
+      const o = map.get(k); o.name = name; return o;
+    };
+    r.data.forEach((x) => { const o = get(x.staff_name, x.staff_email); o.results.push(x); o.last = Math.max(o.last, +new Date(x.created_at)); });
+    s.data.forEach((x) => { const o = get(x.staff_name, x.staff_email); o.sigs.push(x); o.last = Math.max(o.last, +new Date(x.signed_at)); });
+    staff = [...map.values()].sort((a, b) => b.last - a.last);
+    render("");
+  }
+
+  function render(q) {
+    const list = staff.filter((p) => !q || (p.name + " " + p.email).toLowerCase().includes(q.toLowerCase()));
+    const rows = list.map((p) => {
+      const passed = new Set(p.results.filter((x) => x.passed).map((x) => x.lesson));
+      const signed = new Set(p.sigs.map((x) => x.lesson));
+      const dots = (set) => `<span class="dots">${L.map((l) => `<i class="${set.has(l.id) ? "on" : ""}" title="${esc(l.title)}"></i>`).join("")}</span>`;
+      return `<tr>
+        <td><b>${esc(p.name)}</b><div class="em">${esc(p.email)}</div></td>
+        <td class="hide-sm">${dots(signed)}<div class="em">${signed.size} / ${L.length} signed</div></td>
+        <td class="hide-sm">${dots(passed)}<div class="em">${passed.size} / ${L.length} passed</div></td>
+        <td class="hide-sm em">${fmt(p.last)}</td>
+        <td style="text-align:right"><button class="btn btn-sm" data-save="${esc(p.email)}">Save</button></td>
+      </tr>`;
+    }).join("");
+    app.innerHTML = `
+      <div class="adm-head">
+        <div><div class="eyebrow">Admin</div><h2>Staff onboarding records</h2>
+        <p class="small">${staff.length} staff member${staff.length === 1 ? "" : "s"}. Click <b>Save</b> to download that person's signed record as a PDF.</p></div>
+        <div class="adm-tools"><input id="q" placeholder="Search name or email" value="${esc(q)}"><button class="btn btn-ghost btn-sm" id="reload">Refresh</button></div>
+      </div>
+      ${list.length ? `<table class="staff"><thead><tr><th>Staff</th><th class="hide-sm">Acknowledged &amp; e-signed</th><th class="hide-sm">Tests passed</th><th class="hide-sm">Last activity</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+        : `<div class="empty">No onboarding records yet.</div>`}`;
+    const qi = document.getElementById("q");
+    qi.oninput = () => { const v = qi.value, pos = qi.selectionStart; render(v); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(pos, pos); };
+    document.getElementById("reload").onclick = () => { app.innerHTML = `<p class="small">Loading records…</p>`; load(); };
+    app.querySelectorAll("[data-save]").forEach((b) => (b.onclick = () => savePdf(b)));
+  }
+
+  let logoData;
+  async function logo() {
+    if (logoData) return logoData;
+    const blob = await (await fetch("assets/logo.png")).blob();
+    logoData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(blob); });
+    return logoData;
+  }
+
+  async function savePdf(btn) {
+    const p = staff.find((x) => x.email === btn.dataset.save);
+    btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      const { data: sigs, error } = await sb.from("onboarding_signatures")
+        .select("lesson, staff_name, acknowledgement, signature_png, signed_at").ilike("staff_email", p.email).order("signed_at");
+      if (error) throw error;
+      const latestSig = {};
+      sigs.forEach((s) => (latestSig[s.lesson] = s));
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const W = 210, M = 20, CW = W - 2 * M;
+      const img = await logo();
+      let y;
+
+      function letterhead() {
+        doc.addImage(img, "PNG", M, 12, 46, 23);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(40);
+        ["Tel : 6733 0021", "Fax : 6733 2377", "133 New Bridge Road #20-03 Chinatown Point Singapore 059413", "GST Registration No. 201919619Z"]
+          .forEach((t, i) => doc.text(t, W - M, 17 + i * 4, { align: "right" }));
+        doc.setDrawColor(128, 0, 0); doc.setLineWidth(0.6); doc.line(M, 40, W - M, 40);
+        y = 50;
+      }
+      function footer() {
+        const n = doc.getNumberOfPages();
+        for (let i = 1; i <= n; i++) {
+          doc.setPage(i);
+          doc.setDrawColor(190); doc.setLineWidth(0.2); doc.line(M, 279, W - M, 279);
+          doc.setFontSize(7); doc.setTextColor(90);
+          doc.text(`Page ${i} of ${n}`, W - M, 283, { align: "right" });
+          doc.text(doc.splitTextToSize("A.W. LAW LLC (UEN Number: 201919619Z) is a law corporation with limited liability. The contents of this document are strictly confidential and may contain privileged information.", CW - 30), M, 283);
+        }
+      }
+      function need(h) { if (y + h > 272) { doc.addPage(); letterhead(); } }
+      function text(t, size, style, color) {
+        doc.setFont("helvetica", style || "normal"); doc.setFontSize(size || 11); doc.setTextColor(...(color || [17, 17, 17]));
+        const lines = doc.splitTextToSize(t, CW); const h = lines.length * size * 0.42 + 1.5;
+        need(h); doc.text(lines, M, y + size * 0.35); y += h;
+      }
+
+      letterhead();
+      text("STAFF ONBOARDING RECORD", 15, "bold", [90, 11, 11]); y += 2;
+      text(`Name: ${p.name}`, 11); text(`Email: ${p.email}`, 11); text(`Record saved: ${fmt(new Date())}`, 11); y += 4;
+
+      // summary table
+      const cols = [M, M + 66, M + 114, M + 149];
+      need(10);
+      doc.setFillColor(246, 234, 234); doc.rect(M, y, CW, 8, "F");
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(90, 11, 11);
+      ["Lesson", "Acknowledged & e-signed", "Best score", "Result"].forEach((h, i) => doc.text(h, cols[i] + 2, y + 5.5));
+      y += 8;
+      doc.setFont("helvetica", "normal"); doc.setTextColor(17);
+      L.forEach((l) => {
+        const res = p.results.filter((x) => x.lesson === l.id);
+        const best = res.length ? Math.max(...res.map((x) => +x.percent)) : null;
+        const pass = res.some((x) => x.passed);
+        const sg = latestSig[l.id];
+        need(8);
+        doc.setFontSize(9.5);
+        doc.text(`${l.num}  ${l.title}`, cols[0] + 2, y + 5.5);
+        doc.text(sg ? fmt(sg.signed_at) : "Not signed", cols[1] + 2, y + 5.5);
+        doc.text(best === null ? "—" : `${best}% (${res.length} attempt${res.length === 1 ? "" : "s"})`, cols[2] + 2, y + 5.5);
+        doc.setTextColor(...(pass ? [30, 107, 69] : best === null ? [110, 110, 110] : [163, 38, 27]));
+        doc.text(pass ? "Passed" : best === null ? "Not taken" : "Not passed", cols[3] + 2, y + 5.5);
+        doc.setTextColor(17); doc.setDrawColor(225); doc.line(M, y + 8, W - M, y + 8);
+        y += 8;
+      });
+      y += 8;
+
+      // acknowledgements with signatures
+      text("ACKNOWLEDGMENTS AND E-SIGNATURES", 12, "bold", [90, 11, 11]); y += 2;
+      L.forEach((l) => {
+        const sg = latestSig[l.id];
+        need(sg ? 52 : 18);
+        text(`Lesson ${l.num}: ${l.title}`, 11, "bold");
+        if (!sg) { text("Not yet acknowledged or signed.", 10, "italic", [110, 110, 110]); y += 4; return; }
+        text(`"${sg.acknowledgement}"`, 10, "normal", [50, 50, 50]); y += 1;
+        const props = doc.getImageProperties(sg.signature_png);
+        const h = 18, w = Math.min(70, (props.width / props.height) * h);
+        need(h + 14);
+        doc.addImage(sg.signature_png, "PNG", M, y, w, h);
+        y += h + 1;
+        doc.setDrawColor(60); doc.setLineWidth(0.3); doc.line(M, y, M + 75, y); y += 4;
+        text(`${sg.staff_name}   ·   Signed ${fmt(sg.signed_at)}`, 9, "normal", [80, 80, 80]);
+        y += 5;
+      });
+
+      footer();
+      doc.save(`Onboarding Record - ${p.name} ${dmy(new Date())}.pdf`);
+      btn.textContent = "Saved ✓";
+    } catch (e) {
+      alertBox(e.message || String(e));
+      btn.textContent = "Save";
+    } finally {
+      setTimeout(() => { btn.disabled = false; if (btn.textContent === "Saved ✓") btn.textContent = "Save"; }, 1500);
+    }
+  }
+  function alertBox(m) { const d = document.createElement("div"); d.className = "toast show"; d.textContent = "Couldn't save: " + m; document.body.appendChild(d); setTimeout(() => d.remove(), 4000); }
+
+  start();
+})();
+</script>
+</body>
+</html>

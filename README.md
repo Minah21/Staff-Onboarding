@@ -16,3 +16,9 @@ Induction site for new staff: six lessons, each followed by a test (pass mark: *
 - Lesson text and test questions live in `lessons.js`. Edit there to change content.
 - Test results are posted to Supabase table `onboarding_results` (see `supabase/migrations`). Staff can submit results but cannot read them; admins read them in the Supabase dashboard (or signed in as an `admin` profile).
 - Leave Approver link: `LEAVE_APPROVER_URL` at the top of `lessons.js`.
+
+## Acknowledgment and e-signature
+Every lesson ends with an acknowledgment tick-box and an e-signature pad. Staff must sign before the test unlocks. Signatures are saved to Supabase table `onboarding_signatures` (insert-only for staff).
+
+## Admin page (`/admin.html`)
+Sign in with a Leave Approver account whose role is `admin`. Lists every staff member's signatures and test results, with a **Save** button that downloads that person's signed record as a PDF on the firm letterhead.
