@@ -12,6 +12,7 @@ window.LESSONS = [
   short: "Our firm",
   blurb: "Who we are, what we do, and the people you'll work with.",
   minutes: 5,
+  ack: "I have read and understood the introduction to A.W. Law LLC, its people and how we work with clients.",
   html: `
 <p class="lead">Welcome to the team. A.W. Law LLC is a Singapore law practice of Advocates &amp; Solicitors. We are a small team by design, so every person here, lawyer or staff, is visible to our clients and carries the firm's name.</p>
 
@@ -77,6 +78,7 @@ window.LESSONS = [
   short: "Letter formatting",
   blurb: "The house style for every letter and email that leaves the firm.",
   minutes: 8,
+  ack: "I have read and understood the A.W. Law LLC letter formatting house style and will follow it for all correspondence.",
   html: `
 <p class="lead">Every letter we send is evidence. It may be read by a judge, exhibited in an affidavit or relied on by the other side. Follow this house style every time, and never send anything until the lawyer on the file has checked it.</p>
 
@@ -143,6 +145,7 @@ window.LESSONS = [
   short: "Precedent letters",
   blurb: "Ready-to-adapt templates for the letters you'll draft most often.",
   minutes: 10,
+  ack: "I have read and understood the A.W. Law LLC precedent letters and will have every letter checked by the lawyer on the file before it is sent.",
   html: `
 <p class="lead">A precedent is a tested starting point, not a finished letter. Copy the right one, fill every <mark>[bracket]</mark>, delete what doesn't apply, and have the lawyer on the file check it before it goes out. Each precedent below follows the house style from Lesson 02.</p>
 
@@ -519,6 +522,7 @@ A.W. LAW LLC</pre>
   short: "Bill collection",
   blurb: "Deposits, instalments, billing contacts and following up enquiries.",
   minutes: 5,
+  ack: "I have read and understood the A.W. Law LLC Bill Collection Process and agree to comply with it.",
   html: `
 <p class="lead">Billing protects the firm and the client. Every bill must match what the client agreed to in the Warrant to Act, and the client is never surprised by a fee.</p>
 

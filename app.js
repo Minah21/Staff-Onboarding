@@ -13,6 +13,7 @@
   let state = load();
   state.results = state.results || {};
   state.ack = state.ack || {};
+  state.sig = state.sig || {};
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const byId = (id) => L.find((l) => l.id === id);
@@ -27,10 +28,10 @@
   }
 
   /* ---------- Supabase ---------- */
-  async function sendResult(row) {
+  async function sendResult(row, table) {
     if (!window.SUPABASE_URL || !window.SUPABASE_KEY) return false;
     try {
-      const r = await fetch(window.SUPABASE_URL + "/rest/v1/onboarding_results", {
+      const r = await fetch(window.SUPABASE_URL + "/rest/v1/" + (table || "onboarding_results"), {
         method: "POST",
         headers: {
           apikey: window.SUPABASE_KEY,
@@ -47,7 +48,10 @@
     const q = state.queue || [];
     if (!q.length) return;
     const left = [];
-    for (const row of q) { if (!(await sendResult(row))) left.push(row); }
+    for (const item of q) {
+      const table = item.table || "onboarding_results", row = item.row || item;
+      if (!(await sendResult(row, table))) left.push({ table, row });
+    }
     state.queue = left; save(state);
   }
 
@@ -58,7 +62,7 @@
     if (!state.user) { w.innerHTML = ""; return; }
     w.innerHTML = esc(state.user.name) + ' · <button type="button" id="switchUser">Not you?</button>';
     document.getElementById("switchUser").onclick = () => {
-      if (confirmSwitch()) { state = { results: {}, ack: {}, queue: state.queue || [] }; save(state); location.hash = "#/"; render(); }
+      if (confirmSwitch()) { state = { results: {}, ack: {}, sig: {}, queue: state.queue || [] }; save(state); location.hash = "#/"; render(); }
     };
   }
   function confirmSwitch() { return window.confirm("Sign out and clear progress saved on this computer?"); }
@@ -159,7 +163,8 @@
       <div class="eyebrow">Lesson ${l.num} · ${l.minutes} min read</div>
       <h2>${esc(l.title)}</h2>
       ${l.html}
-      ${l.ack ? `<label class="ack"><input type="checkbox" id="ack" ${state.ack[id] ? "checked" : ""}><span><b>Acknowledgment.</b> ${esc(l.ack)}</span></label>` : ""}
+      ${l.ack ? `<label class="ack"><input type="checkbox" id="ack" ${state.ack[id] ? "checked" : ""}><span><b>Acknowledgment.</b> ${esc(l.ack)}</span></label>
+      <section class="esign" id="esign"></section>` : ""}
       <div class="lesson-foot">
         ${prev ? `<a class="btn btn-ghost" href="#/lesson/${prev.id}">← ${esc(prev.short)}</a>` : `<a class="btn btn-ghost" href="#/">← All lessons</a>`}
         <button class="btn" id="toTest">Take the ${esc(l.short)} test →</button>
@@ -188,10 +193,87 @@
     });
     const ack = document.getElementById("ack");
     const btn = document.getElementById("toTest");
-    const sync = () => { if (ack) btn.disabled = !ack.checked; };
-    if (ack) ack.onchange = () => { state.ack[id] = ack.checked; save(state); sync(); };
+    const sync = () => {
+      if (!ack) return;
+      btn.disabled = !(ack.checked && state.sig[id]);
+      btn.title = btn.disabled ? "Tick the acknowledgment and e-sign first" : "";
+      renderEsign(l, sync);
+    };
+    if (ack) ack.onchange = () => {
+      state.ack[id] = ack.checked;
+      if (!ack.checked) delete state.sig[id];
+      save(state); sync();
+    };
     sync();
     btn.onclick = () => (location.hash = "#/test/" + id);
+  }
+
+  /* ---------- e-signature ---------- */
+  function fmtDate(d) { return new Date(d).toLocaleString("en-SG", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit" }); }
+
+  function renderEsign(l, onChange) {
+    const box = document.getElementById("esign");
+    if (!box) return;
+    const id = l.id, sig = state.sig[id], ticked = !!state.ack[id];
+    if (sig) {
+      box.innerHTML = `<div class="es-head"><b>E-signature</b><span class="badge pass">Signed</span></div>
+        <div class="es-signed">
+          <img src="${sig.png}" alt="Signature of ${esc(sig.name)}">
+          <div class="es-line"></div>
+          <div class="es-meta"><b>${esc(sig.name)}</b><br>${esc(sig.email)}<br>Signed ${fmtDate(sig.at)}</div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="resign">Sign again</button>`;
+      document.getElementById("resign").onclick = () => { delete state.sig[id]; save(state); onChange(); };
+      return;
+    }
+    box.innerHTML = `<div class="es-head"><b>E-signature</b><span class="small">${ticked ? "Sign in the box with your mouse or finger" : "Tick the acknowledgment above first"}</span></div>
+      <div class="es-pad ${ticked ? "" : "off"}"><canvas id="pad" aria-label="Signature pad"></canvas><span class="es-x">✕</span><span class="es-hint" id="hint">Sign here</span></div>
+      <div class="es-row">
+        <label>Full name<input id="esName" value="${esc(state.user.name)}" ${ticked ? "" : "disabled"}></label>
+        <label>Date<input value="${new Date().toLocaleDateString("en-SG", { day: "numeric", month: "long", year: "numeric" })}" disabled></label>
+      </div>
+      <div class="es-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="esClear" ${ticked ? "" : "disabled"}>Clear</button>
+        <button type="button" class="btn btn-sm" id="esSign" disabled>Sign &amp; confirm</button>
+      </div>`;
+    if (!ticked) return;
+
+    const cv = document.getElementById("pad"), ctx = cv.getContext("2d");
+    const signBtn = document.getElementById("esSign"), hint = document.getElementById("hint");
+    let drawing = false, inked = 0, last = null;
+    function size() {
+      const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      cv.width = r.width * dpr; cv.height = r.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineWidth = 2.2; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#0b1f4d";
+    }
+    size();
+    const pos = (e) => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    cv.addEventListener("pointerdown", (e) => { drawing = true; last = pos(e); cv.setPointerCapture(e.pointerId); hint.style.display = "none"; ctx.beginPath(); ctx.arc(last.x, last.y, 1, 0, Math.PI * 2); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); });
+    cv.addEventListener("pointermove", (e) => {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      inked += Math.hypot(p.x - last.x, p.y - last.y); last = p;
+      signBtn.disabled = inked < 40;
+    });
+    const end = () => { drawing = false; };
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    document.getElementById("esClear").onclick = () => { ctx.clearRect(0, 0, cv.width, cv.height); inked = 0; signBtn.disabled = true; hint.style.display = ""; };
+    signBtn.onclick = async () => {
+      const name = document.getElementById("esName").value.trim();
+      if (name.length < 2) { toast("Please type your full name"); return; }
+      // export on white so it prints cleanly
+      const out = document.createElement("canvas"); out.width = cv.width; out.height = cv.height;
+      const o = out.getContext("2d"); o.fillStyle = "#fff"; o.fillRect(0, 0, out.width, out.height); o.drawImage(cv, 0, 0);
+      const png = out.toDataURL("image/png");
+      const at = new Date().toISOString();
+      state.sig[id] = { png, name, email: state.user.email, at };
+      save(state); onChange();
+      const row = { staff_name: name, staff_email: state.user.email, lesson: id, acknowledgement: l.ack, signature_png: png, signed_at: at };
+      if (!(await sendResult(row, "onboarding_signatures"))) { state.queue = (state.queue || []).concat([{ table: "onboarding_signatures", row }]); save(state); }
+      toast("Signed. You can now take the test.");
+    };
   }
 
   // Same layout rules as scripts/build_precedents.py
@@ -247,7 +329,7 @@
 
   function test(id) {
     const l = byId(id); if (!l) return home();
-    if (l.ack && !state.ack[id]) { location.hash = "#/lesson/" + id; return; }
+    if (l.ack && !(state.ack[id] && state.sig[id])) { location.hash = "#/lesson/" + id; return; }
     // shuffle question and option order on every attempt
     const qs = shuffle(l.quiz.map((q, qi) => ({ ...q, qi, opts: shuffle(q.o.map((text, oi) => ({ text, oi }))) })));
     app.innerHTML = `${crumbs(id)}
