@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Day at A.W. Law</title>
+<meta name="description" content="An onboarding game for new staff of A.W. Law LLC.">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=6">
+<link rel="stylesheet" href="game.css?v=6">
+</head>
+<body class="game">
+<header class="topbar">
+  <a href="./" class="brand" aria-label="Back to onboarding"><img src="assets/logo.png" alt="A.W. Law LLC — Advocates &amp; Solicitors"></a>
+  <nav class="topnav">
+    <a href="./" class="navlink">Lessons</a>
+    <button class="btn btn-ghost btn-sm" id="mute" type="button" aria-pressed="false">🔊 Sound on</button>
+  </nav>
+</header>
+
+<div class="hud" id="hud" hidden>
+  <div class="hud-clock"><span class="clock-face" id="clockFace"></span><b id="clock">9:00 AM</b></div>
+  <div class="hud-room" id="hudRoom"></div>
+  <div class="hud-stats">
+    <span title="Streak" id="streak" class="streak"></span>
+    <span class="score"><small>Score</small><b id="score">0</b></span>
+  </div>
+</div>
+
+<main id="stage" class="stage" tabindex="-1"></main>
+
+<script src="game.js?v=6"></script>
+</body>
+</html>

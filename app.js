@@ -126,6 +126,12 @@
     </section>
     <div class="grid">
       ${cards}
+      <a class="lcard game-card" href="game.html">
+        <span class="num">🎮</span>
+        <h4>A Day at A.W. Law</h4>
+        <p>Put what you've learned to work: six rooms, six mini-games, one working day from 9 to 6.</p>
+        <span class="meta"><span>About 10 minutes</span><span class="badge todo">Play</span></span>
+      </a>
       <a class="lcard leave" href="${window.LEAVE_APPROVER_URL}" target="_blank" rel="noopener">
         <span class="num">↗</span>
         <h4>Leave Approver</h4>

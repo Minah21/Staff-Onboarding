@@ -203,3 +203,5 @@ a.lcard{text-decoration:none}
 .es-line{border-top:1px solid #333;margin:2px 0 6px}
 .es-meta{font-size:13px;color:var(--muted);margin-bottom:12px}
 @media (max-width:560px){.es-row{grid-template-columns:1fr}}
+.lcard.game-card{background:linear-gradient(135deg,#fff 0%,#fbf0e0 100%);border-color:#e8c98d}
+.lcard.game-card:hover{border-color:var(--maroon)}

@@ -22,3 +22,6 @@ Every lesson ends with an acknowledgment tick-box and an e-signature pad. Staff 
 
 ## Admin page (`/admin.html`)
 Sign in with a Leave Approver account whose role is `admin`. Lists every staff member's signatures and test results, with a **Save** button that downloads that person's signed record as a PDF on the firm letterhead.
+
+## Game (`/game.html`)
+"A Day at A.W. Law": six rooms, one working day (9 AM–6 PM), each a mini-game built from the lessons: ordering a matter's life cycle, sorting documents into OneDrive folders, spotting errors in a draft letter, naming files and emails, ethics dilemmas, and rapid-fire billing quotes. Scores, stars, ranks and a personal best (saved in the browser).
