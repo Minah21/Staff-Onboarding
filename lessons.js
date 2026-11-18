@@ -93,7 +93,7 @@ window.LESSONS = [
   <div class="la-row"><b>7. Salutation</b><span><code>Dear Sirs</code> to a firm, company or government body; <code>Dear Sir / Madam</code> to the Registrar or an officer whose name you don't know; <code>Dear Mr Tan</code> / <code>Dear Ms Lim</code> to a named person (clients included).</span></div>
   <div class="la-row"><b>8. Subject heading</b><span>Bold and in capitals. For court matters: case number and parties, e.g. <code>DC/OC 123/2026 — JOHN TAN v XYZ PTE LTD</code>. For client letters, the client's name comes first.</span></div>
   <div class="la-row"><b>9. Body</b><span>Numbered paragraphs. Open by stating who we act for or what we refer to: "We act for Mr John Tan…" / "We refer to your letter dated…". One point per paragraph.</span></div>
-  <div class="la-row"><b>10. Closing</b><span><code>Yours faithfully</code> after "Dear Sirs" or "Dear Sir / Madam". <code>Yours sincerely</code> after a named salutation.</span></div>
+  <div class="la-row"><b>10. Closing</b><span>Always close with <code>Yours sincerely</code>, including after "Dear Sirs". Do not use "Yours faithfully".</span></div>
   <div class="la-row"><b>11. Signature</b><span>Letters are signed in the firm's name: <code>A.W. LAW LLC</code>, not by an individual. Add a contact line, e.g. "Contact: Muhammad Hasif (hasif@awlaw.com.sg)".</span></div>
   <div class="la-row"><b>12. Copies</b><span>Add <code>cc: Client</code> where the client is copied. Never copy a client on a letter without the lawyer's approval.</span></div>
 </div>
@@ -125,7 +125,7 @@ window.LESSONS = [
 <div class="callout"><b>Timing.</b> Updates after a court attendance go out the same day, or by 12.00am the next day. If a full reply needs more time, the lawyer sends a holding reply within 2 days.</div>`,
   quiz: [
     { q: "How should the date be written on a firm letter?", o: ["05/11/26", "5th Nov 2026", "5 November 2026", "November 5, 2026"], a: 2 },
-    { q: "You are writing to another law firm and start with \"Dear Sirs\". How do you close?", o: ["Yours sincerely", "Yours faithfully", "Best regards", "Thank you"], a: 1 },
+    { q: "You are writing to another law firm and start with \"Dear Sirs\". How do you close?", o: ["Yours sincerely", "Yours faithfully", "Best regards", "Thank you"], a: 0 },
     { q: "You are writing to a client, Mr Tan, and start with \"Dear Mr Tan\". How do you close?", o: ["Yours faithfully", "Cheers", "Yours sincerely", "Warm wishes"], a: 2 },
     { q: "Who signs off a letter from the firm?", o: ["The paralegal who drafted it", "The firm, as \"A.W. LAW LLC\"", "The receptionist", "No signature is needed"], a: 1 },
     { q: "When is a letter marked \"WITHOUT PREJUDICE\"?", o: ["On every letter", "When it contains a settlement offer or proposal, as the lawyer decides", "Only on letters to the court", "When it is urgent"], a: 1 },
@@ -181,7 +181,7 @@ Dear [Sirs / Mr / Ms Name],
 5.  Nothing in this letter waives any of our client's rights, all of
     which are expressly reserved.
 
-Yours faithfully / sincerely
+Yours sincerely
 
 A.W. LAW LLC
 Contact: [Lawyer name] ([email])
@@ -210,7 +210,7 @@ Dear Sirs,
 
 3.  In the meantime, all our client's rights are reserved.
 
-Yours faithfully
+Yours sincerely
 
 A.W. LAW LLC</pre>
 </div>
@@ -268,7 +268,7 @@ Dear Sir / Madam,
 
 4.  We are grateful for the Court's consideration.
 
-Yours faithfully
+Yours sincerely
 
 A.W. LAW LLC
 cc: [Opposing counsel / Prosecution]</pre>
@@ -302,7 +302,7 @@ Dear Sirs,
 3.  This offer remains open for acceptance until [time, date], after
     which it lapses without further notice.
 
-Yours faithfully
+Yours sincerely
 
 A.W. LAW LLC</pre>
 </div>
@@ -356,7 +356,7 @@ REQUEST FOR SANCTION TO ACT
 3.  We should be grateful for your sanction to act for [client name] in
     this matter. We will not take any steps until sanction is granted.
 
-Yours faithfully
+Yours sincerely
 
 A.W. LAW LLC</pre>
 </div>`,

@@ -319,7 +319,7 @@
       subject: "The subject heading needs the case number and parties, in bold capitals.",
       wp: "A settlement offer must be marked WITHOUT PREJUDICE, and the lawyer decides that.",
       tone: "Keep it formal. No abbreviations or emojis in firm correspondence.",
-      close: "\"Dear Sirs\" closes with \"Yours faithfully\", not \"Yours sincerely\".",
+      close: "The firm always closes with \"Yours sincerely\", even after \"Dear Sirs\".",
       sign: "Letters are signed in the firm's name: A.W. LAW LLC."
     };
     const seg = (t, e) => `<span class="seg" ${e ? `data-e="${e}"` : ""}>${t}</span>`;
@@ -339,7 +339,7 @@
         <p>${seg("2.&nbsp;&nbsp;We refer to your letter dated 3 November 2026.")}</p>
         <p>3.&nbsp;&nbsp;${seg("Our client is prepared to settle this matter for $5,000 if your client pays within 14 days.", "wp")}</p>
         <p>4.&nbsp;&nbsp;${seg("Pls revert asap thx 😊", "tone")}</p>
-        <p>${seg("Yours sincerely,", "close")}</p>
+        <p>${seg("Yours faithfully,", "close")}</p>
         <p>${seg("Jane (Paralegal)", "sign")}</p>
         <p>${seg("cc: Client")}</p>
       </div>
